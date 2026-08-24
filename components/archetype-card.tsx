@@ -73,7 +73,7 @@ export function ArchetypeExplorer({ archetypes }: ArchetypeExplorerProps): React
               onClick={() => setIndex(i)}
               className={cn(
                 "cursor-pointer rounded-lg px-3 py-2.5 text-left outline-none transition-[background-color,box-shadow] duration-(--duration-quick) focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
-                !active && "ring-1 ring-foreground/10 hover:bg-muted"
+                !active && "hover:bg-muted"
               )}
               style={
                 active
@@ -81,7 +81,7 @@ export function ArchetypeExplorer({ archetypes }: ArchetypeExplorerProps): React
                       background: tint(archetype.color, 90),
                       boxShadow: `inset 0 0 0 1.5px ${darken(archetype.color, 15)}`,
                     }
-                  : undefined
+                  : { boxShadow: `inset 0 0 0 1px ${tint(archetype.color, 30)}` }
               }
             >
               <span className="block text-sm font-medium">{archetype.name}</span>
