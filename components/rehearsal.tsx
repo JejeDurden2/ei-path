@@ -162,7 +162,7 @@ export function Rehearsal(): ReactElement {
                     onClick={() => setArchetypeName(a.name)}
                     className={cn(
                       "rounded-full px-3 py-1.5 text-sm transition-[background-color,box-shadow] duration-150",
-                      archetypeName !== a.name && "ring-1 ring-border ring-inset hover:bg-muted"
+                      archetypeName !== a.name && "hover:bg-muted"
                     )}
                     style={
                       archetypeName === a.name
@@ -171,7 +171,7 @@ export function Rehearsal(): ReactElement {
                             color: darken(a.color, 45),
                             boxShadow: `inset 0 0 0 1.5px ${darken(a.color, 15)}`,
                           }
-                        : undefined
+                        : { boxShadow: `inset 0 0 0 1px ${tint(a.color, 30)}` }
                     }
                   >
                     {a.name}
