@@ -1,4 +1,5 @@
 import { CaretDown } from "@phosphor-icons/react/dist/ssr";
+import { PageHeader } from "@/components/page-header";
 import type { FormatItem } from "@/lib/types";
 import { FORMATS, ORIGINS, STEPS } from "@/lib/data";
 
@@ -36,51 +37,53 @@ function Disclosure({ item }: { item: FormatItem }): React.ReactElement {
 
 export default function HowPage(): React.ReactElement {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16">
-      <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
-        How it works
-      </h1>
-      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-        Four moves: two about you, two about the others. Stop and pick it up
-        whenever you want, the tree keeps your progress.
-      </p>
+    <div>
+      <PageHeader
+        title="How it works"
+        lede="Four moves: two about you, two about the others. Stop and pick it up whenever you want, the tree keeps your progress."
+      />
+      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
+        <ol className="divide-y divide-border border-y border-border">
+          {STEPS.map((step, i) => (
+            <li
+              key={step.title}
+              className="grid gap-2 py-6 sm:grid-cols-[7rem_1fr] sm:gap-8"
+            >
+              <span className="font-mono text-xs tracking-widest text-azure uppercase sm:pt-1">
+                Step {i + 1}
+              </span>
+              <div>
+                <h2 className="text-base font-medium">{step.title}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {step.body}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
 
-      <ol className="mt-10 divide-y divide-border border-y border-border">
-        {STEPS.map((step, i) => (
-          <li
-            key={step.title}
-            className="grid gap-2 py-6 sm:grid-cols-[7rem_1fr] sm:gap-8"
-          >
-            <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase sm:pt-1">
-              Step {i + 1}
-            </span>
-            <div>
-              <h2 className="text-base font-medium">{step.title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{step.body}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+        <h2 className="mt-14 text-xl font-medium tracking-tight">
+          The formats
+        </h2>
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FORMATS.map((format) => (
+            <li key={format.title}>
+              <Disclosure item={format} />
+            </li>
+          ))}
+        </ul>
 
-      <h2 className="mt-14 text-xl font-medium tracking-tight">The formats</h2>
-      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {FORMATS.map((format) => (
-          <li key={format.title}>
-            <Disclosure item={format} />
-          </li>
-        ))}
-      </ul>
-
-      <h2 className="mt-14 text-xl font-medium tracking-tight">
-        Where this comes from
-      </h2>
-      <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-        {ORIGINS.map((origin) => (
-          <li key={origin.title}>
-            <Disclosure item={origin} />
-          </li>
-        ))}
-      </ul>
+        <h2 className="mt-14 text-xl font-medium tracking-tight">
+          Where this comes from
+        </h2>
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+          {ORIGINS.map((origin) => (
+            <li key={origin.title}>
+              <Disclosure item={origin} />
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

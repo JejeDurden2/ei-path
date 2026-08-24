@@ -151,4 +151,43 @@
     block-size: auto;
     opacity: 1;
   }
+
+  /* Skill tree graph. Scattered absolute layout on md+, plain column on mobile. */
+  .tree-branch {
+    inline-size: 100%;
+    max-inline-size: 340px;
+  }
+  @media (min-width: 768px) {
+    .tree-canvas {
+      block-size: var(--tree-h);
+    }
+    .tree-branch {
+      position: absolute;
+      inset-inline-start: var(--x);
+      inset-block-start: var(--y);
+      inline-size: var(--w, 210px);
+      max-inline-size: none;
+    }
+  }
+  .tree-wire {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 6 10;
+    animation: tree-flow 2.4s linear infinite;
+  }
+  @keyframes tree-flow {
+    to {
+      stroke-dashoffset: -32;
+    }
+  }
+  .tree-kid {
+    animation: tree-grow 0.35s var(--ease-smooth-out) both;
+  }
+  @keyframes tree-grow {
+    from {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+    }
+  }
 }
