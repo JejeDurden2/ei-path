@@ -84,15 +84,8 @@ export function ArchetypeExplorer({ archetypes }: ArchetypeExplorerProps): React
                   : undefined
               }
             >
-              <span className="flex items-center gap-2 text-sm font-medium">
-                <span
-                  aria-hidden
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ background: archetype.color }}
-                />
-                {archetype.name}
-              </span>
-              <span className="mt-0.5 block pl-4 text-xs text-muted-foreground">
+              <span className="block text-sm font-medium">{archetype.name}</span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
                 {archetype.driver.replace(/^Driven by /, "")}
               </span>
             </button>
