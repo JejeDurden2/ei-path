@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { ArchetypeCard } from "@/components/archetype-card";
+import { ArchetypeExplorer } from "@/components/archetype-card";
 import { PageHeader } from "@/components/page-header";
 import { Simulator } from "@/components/simulator";
 import { buttonVariants } from "@/components/ui/button";
@@ -21,10 +21,8 @@ export default function OthersPage(): React.ReactElement {
         lede="Not to classify people. To stop assuming they are difficult, and start asking what they need to engage."
       />
       <div className="mx-auto w-full max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {ARCHETYPES.map((archetype) => (
-            <ArchetypeCard key={archetype.name} archetype={archetype} />
-          ))}
+        <section>
+          <ArchetypeExplorer archetypes={ARCHETYPES} />
         </section>
 
         <section className="mt-16 max-w-3xl">
