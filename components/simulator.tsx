@@ -21,7 +21,7 @@ function Chip({ label, selected, color, onSelect }: ChipProps): React.ReactEleme
       aria-pressed={selected}
       onClick={onSelect}
       className={cn(
-        "cursor-pointer rounded-full px-3 py-1.5 text-sm transition-[background-color,box-shadow,color] duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
+        "cursor-pointer px-3 py-1.5 text-sm transition-[background-color,box-shadow,color] duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
         !selected && "hover:bg-muted",
         !color &&
           (selected

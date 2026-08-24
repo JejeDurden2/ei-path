@@ -161,7 +161,7 @@ export function Rehearsal(): ReactElement {
                     type="button"
                     onClick={() => setArchetypeName(a.name)}
                     className={cn(
-                      "rounded-full px-3 py-1.5 text-sm transition-[background-color,box-shadow] duration-150",
+                      "px-3 py-1.5 text-sm transition-[background-color,box-shadow] duration-150",
                       archetypeName !== a.name && "hover:bg-muted"
                     )}
                     style={
@@ -190,7 +190,7 @@ export function Rehearsal(): ReactElement {
                     type="button"
                     onClick={() => setSituationName(s.name)}
                     className={cn(
-                      "rounded-full border px-3 py-1.5 text-sm transition-colors duration-150",
+                      "border px-3 py-1.5 text-sm transition-colors duration-150",
                       situationName === s.name
                         ? "border-foreground bg-foreground text-background"
                         : "border-border hover:bg-muted"
@@ -216,9 +216,9 @@ export function Rehearsal(): ReactElement {
                 {archetype.name}
               </span>
               <span className="text-muted-foreground">· {situation.name}</span>
-              <div className="ml-auto h-1 w-16 overflow-hidden rounded-full bg-muted sm:w-24">
+              <div className="ml-auto h-1 w-16 overflow-hidden bg-muted sm:w-24">
                 <div
-                  className={cn("h-full rounded-full transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)", gaugeTone(score))}
+                  className={cn("h-full transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)", gaugeTone(score))}
                   style={{ width: `${score}%` }}
                 />
               </div>
@@ -284,9 +284,9 @@ export function Rehearsal(): ReactElement {
               </p>
               <p className="text-sm font-medium">{verdictFor(score)}</p>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-1.5 w-full overflow-hidden bg-muted">
               <div
-                className={cn("h-full rounded-full transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)", gaugeTone(score))}
+                className={cn("h-full transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)", gaugeTone(score))}
                 style={{ width: `${score}%` }}
               />
             </div>

@@ -21,9 +21,9 @@ export function SiteNav(): React.ReactElement {
       <div className="mx-auto flex max-w-5xl items-center gap-6 px-5 py-3 sm:px-8">
         <Link
           href="/"
-          className="shrink-0 font-mono text-xs tracking-widest text-foreground uppercase"
+          className="shrink-0 font-heading text-base font-semibold tracking-tight text-foreground"
         >
-          EI Path
+          The EI Path
         </Link>
 
         <nav

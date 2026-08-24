@@ -234,7 +234,7 @@ export function Tree(): ReactElement {
                 )}
               >
                 {isNext && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-azure px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white">
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-azure px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white">
                     next up
                   </span>
                 )}
@@ -277,7 +277,7 @@ export function Tree(): ReactElement {
                       >
                         <span
                           className={cn(
-                            "mt-px flex size-3.5 shrink-0 items-center justify-center rounded-[4px] border transition-colors duration-150",
+                            "mt-px flex size-3.5 shrink-0 items-center justify-center border transition-colors duration-150",
                             moduleDone ? "border-azure bg-azure text-white" : "border-border"
                           )}
                         >

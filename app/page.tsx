@@ -8,7 +8,6 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { RULES } from "@/lib/data";
-import { cn } from "@/lib/utils";
 
 interface Gate {
   num: string;
@@ -45,36 +44,29 @@ const GATES: readonly Gate[] = [
 export default function HomePage(): React.ReactElement {
   return (
     <div>
-      {/* Full-bleed navy band: the CTAs live with the pitch instead of a
-          screen below it. */}
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-18">
-          <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
-            The EI Path
-          </h1>
-          <p className="mt-3 max-w-xl text-lg text-primary-foreground/85">
-            Emotional intelligence for PMT. Know yourself, read the room,
-            practise it.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              href="/tree"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "bg-background text-primary hover:bg-background/90"
-              )}
-            >
-              Open the skill tree
-            </Link>
-            <Link
-              href="/how"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-              )}
-            >
-              How it works
-            </Link>
+      {/* Print-style masthead: a heavy ink rule over serif display type,
+          the CTAs living with the pitch instead of a screen below it. */}
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-5xl px-5 pt-10 pb-12 sm:px-8 sm:pt-12 sm:pb-16">
+          <div className="border-t-[3px] border-foreground pt-6">
+            <h1 className="text-4xl font-medium tracking-tight sm:text-6xl">
+              The EI Path
+            </h1>
+            <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+              Emotional intelligence for PMT. Know yourself, read the room,
+              practise it.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href="/tree" className={buttonVariants({ size: "lg" })}>
+                Open the skill tree
+              </Link>
+              <Link
+                href="/how"
+                className={buttonVariants({ variant: "outline", size: "lg" })}
+              >
+                How it works
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -85,7 +77,7 @@ export default function HomePage(): React.ReactElement {
             <li key={gate.num}>
               <Link
                 href={gate.href}
-                className="group flex h-full flex-col gap-3 rounded-xl bg-card p-5 ring-1 ring-border transition-[box-shadow,translate] duration-(--duration-fast) ease-(--ease-smooth-out) hover:-translate-y-0.5 hover:shadow-sm hover:ring-azure/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="group flex h-full flex-col gap-3 bg-card p-5 ring-1 ring-border transition-[box-shadow,translate] duration-(--duration-fast) ease-(--ease-smooth-out) hover:-translate-y-0.5 hover:shadow-sm hover:ring-azure/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs text-azure">
