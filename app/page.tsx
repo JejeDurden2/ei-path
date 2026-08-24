@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { RULES } from "@/lib/data";
+import { cn } from "@/lib/utils";
 
 interface Gate {
   num: string;
@@ -58,22 +59,19 @@ export default function HomePage(): React.ReactElement {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               href="/tree"
-              className={buttonVariants({
-                size: "lg",
-                className:
-                  "bg-background text-primary hover:bg-background/90",
-              })}
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "bg-background text-primary hover:bg-background/90"
+              )}
             >
               Open the skill tree
             </Link>
             <Link
               href="/how"
-              className={buttonVariants({
-                variant: "ghost",
-                size: "lg",
-                className:
-                  "text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground",
-              })}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              )}
             >
               How it works
             </Link>
