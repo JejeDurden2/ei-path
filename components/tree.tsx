@@ -50,6 +50,17 @@ function branchHasProgress(branch: TreeBranch, doneMap: Record<string, boolean>)
   return branch.modules.some((m) => doneMap[moduleKey(branch.id, m)]);
 }
 
+function isUnlocked(index: number, doneMap: Record<string, boolean>): boolean {
+  return (
+    index === 0 || isBranchDone(TREE[index - 1], doneMap) || branchHasProgress(TREE[index], doneMap)
+  );
+}
+
+/* The first unlocked branch that still has modules to tick. -1 when everything is done. */
+function activeIndex(doneMap: Record<string, boolean>): number {
+  return TREE.findIndex((b, i) => isUnlocked(i, doneMap) && !isBranchDone(b, doneMap));
+}
+
 function wirePath(from: Point, to: Point): string {
   const mx = (from.x + to.x) / 2;
   const my = (from.y + to.y) / 2;
@@ -68,12 +79,16 @@ export function Tree(): ReactElement {
   const nodeRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
+    let map: Record<string, boolean> = {};
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setDoneMap(JSON.parse(raw) as Record<string, boolean>);
+      if (raw) map = JSON.parse(raw) as Record<string, boolean>;
     } catch {
       // ignore unreadable storage
     }
+    setDoneMap(map);
+    const active = activeIndex(map);
+    if (active >= 0) setOpenId(TREE[active].id);
     setLoaded(true);
   }, []);
 
@@ -110,7 +125,8 @@ export function Tree(): ReactElement {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [measure]);
+    // doneMap changes node heights (the unlock hint line), so wires need re-measuring.
+  }, [measure, doneMap]);
 
   function toggleModule(branchId: string, module: string): void {
     const key = moduleKey(branchId, module);
@@ -127,9 +143,25 @@ export function Tree(): ReactElement {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <p className="font-mono text-xs text-muted-foreground">
-          {doneModules} / {totalModules} modules
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+          <p className="font-mono text-xs text-muted-foreground">
+            {doneModules} / {totalModules} modules
+          </p>
+          <ul className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+            <li className="flex items-center gap-1.5">
+              <span className="size-2 rounded-full bg-azure" aria-hidden />
+              in progress
+            </li>
+            <li className="flex items-center gap-1.5">
+              <Check size={11} weight="bold" className="text-primary" aria-hidden />
+              done
+            </li>
+            <li className="flex items-center gap-1.5">
+              <Lock size={11} aria-hidden />
+              locked
+            </li>
+          </ul>
+        </div>
         <Progress value={percentage} />
       </div>
 
@@ -143,10 +175,7 @@ export function Tree(): ReactElement {
             TREE.map((branch, index) => {
               const to = wires.nodes[branch.id];
               if (!to) return null;
-              const unlocked =
-                index === 0 ||
-                isBranchDone(TREE[index - 1], doneMap) ||
-                branchHasProgress(branch, doneMap);
+              const unlocked = isUnlocked(index, doneMap);
               const done = isBranchDone(branch, doneMap);
               const stroke = done ? "var(--primary)" : unlocked ? "var(--azure)" : "var(--border)";
               return (
@@ -175,12 +204,11 @@ export function Tree(): ReactElement {
         </div>
 
         {TREE.map((branch, index) => {
-          const unlocked =
-            index === 0 ||
-            isBranchDone(TREE[index - 1], doneMap) ||
-            branchHasProgress(branch, doneMap);
+          const unlocked = isUnlocked(index, doneMap);
           const done = isBranchDone(branch, doneMap);
           const open = openId === branch.id;
+          const isNext = loaded && index === activeIndex(doneMap);
+          const branchDone = branch.modules.filter((m) => doneMap[moduleKey(branch.id, m)]).length;
 
           return (
             <div
@@ -198,12 +226,17 @@ export function Tree(): ReactElement {
                 onClick={() => setOpenId(open ? null : branch.id)}
                 className={cn(
                   "relative w-full rounded-xl border bg-card px-4 py-3.5 text-center transition-all duration-200",
-                  !unlocked && "cursor-not-allowed opacity-45",
+                  !unlocked && "cursor-not-allowed opacity-60",
                   unlocked && "hover:-translate-y-0.5 hover:border-azure hover:shadow-md",
                   open && "border-azure shadow-[0_0_0_3px_rgba(46,91,255,0.12)]",
                   done && "border-primary"
                 )}
               >
+                {isNext && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-azure px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white">
+                    next up
+                  </span>
+                )}
                 {done && (
                   <Check size={12} weight="bold" className="absolute right-2.5 top-2.5 text-primary" />
                 )}
@@ -212,8 +245,13 @@ export function Tree(): ReactElement {
                 )}
                 <span className="block text-sm font-medium">{branch.title}</span>
                 <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
-                  {branch.subtitle}
+                  {branch.subtitle} · {branchDone}/{branch.modules.length}
                 </span>
+                {!unlocked && (
+                  <span className="mt-1.5 block text-[10px] leading-snug text-muted-foreground">
+                    Finish “{TREE[index - 1].title}” to unlock
+                  </span>
+                )}
               </button>
 
               {open && (
