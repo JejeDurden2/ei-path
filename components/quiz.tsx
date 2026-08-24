@@ -33,7 +33,7 @@ const LEADING_QUOTE = /^\s*["“][^"”]*["”]\s*/;
 const TRAILING_QUOTE = /\s*["“][^"”]*["”]\s*$/;
 
 const eyebrow =
-  "font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground";
+  "text-[10px] uppercase tracking-[0.18em] text-muted-foreground";
 
 export function Quiz({ onSend }: QuizProps): React.JSX.Element {
   const [step, setStep] = useState<number>(0);
@@ -79,7 +79,7 @@ export function Quiz({ onSend }: QuizProps): React.JSX.Element {
           <Result picks={picks} score={score} sent={sent} onRetake={retake} onSend={(values) => { onSend(values); setSent(true); }} />
         ) : (
           <div className="space-y-5">
-            <h3 className="text-lg font-medium tracking-tight text-foreground sm:text-xl">
+            <h3 className="font-heading text-lg font-medium text-foreground sm:text-xl">
               {QUIZ[step].question}
             </h3>
             <div className="flex flex-col gap-2">
@@ -144,7 +144,7 @@ function Result({ score, picks, sent, onSend, onRetake }: ResultProps): React.JS
       </div>
 
       <p
-        className="border-l-2 pl-4 font-mono text-sm leading-relaxed text-muted-foreground"
+        className="border-l-2 pl-4 font-heading text-base leading-relaxed text-muted-foreground italic"
         style={{ borderColor: best.color }}
       >
         &ldquo;{best.quote}&rdquo;

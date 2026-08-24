@@ -25,7 +25,7 @@ function Disclosure({ item }: { item: FormatItem }): React.ReactElement {
       <p
         className={
           isPlaceholder
-            ? "pt-4 font-mono text-xs text-muted-foreground"
+            ? "pt-4 text-xs text-muted-foreground"
             : "pt-4 text-sm text-muted-foreground"
         }
       >
@@ -49,7 +49,7 @@ export default function HowPage(): React.ReactElement {
               key={step.title}
               className="grid gap-2 py-6 sm:grid-cols-[7rem_1fr] sm:gap-8"
             >
-              <span className="font-mono text-xs tracking-widest text-azure uppercase sm:pt-1">
+              <span className="text-xs tracking-widest text-azure uppercase sm:pt-1">
                 Step {i + 1}
               </span>
               <div>
@@ -62,7 +62,7 @@ export default function HowPage(): React.ReactElement {
           ))}
         </ol>
 
-        <h2 className="mt-14 text-xl font-medium tracking-tight">
+        <h2 className="mt-14 text-xl font-medium">
           The formats
         </h2>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -73,7 +73,7 @@ export default function HowPage(): React.ReactElement {
           ))}
         </ul>
 
-        <h2 className="mt-14 text-xl font-medium tracking-tight">
+        <h2 className="mt-14 text-xl font-medium">
           Where this comes from
         </h2>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">

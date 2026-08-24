@@ -1,25 +1,36 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import { PaperPlaneRight } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, PaperPlaneRight } from "@phosphor-icons/react";
 
 import { darken, tint } from "@/components/archetype-card";
 import { ANSWERS, ARCHETYPES, CUES, FLAT, REACTIONS, SITUATIONS } from "@/lib/data";
 import type { ArchetypeName } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type ChatMessage =
-  | { role: "system"; text: string }
-  | { role: "agent"; text: string }
-  | { role: "user"; text: string };
-
-type Phase = "setup" | "chat" | "debrief";
-
 const START_SCORE = 50;
 const MAX_TURNS = 3;
+const LOG_KEY = "eipath.rehearsals";
+const LOG_LIMIT = 5;
+
+const label = "text-[10px] uppercase tracking-[0.18em] text-muted-foreground";
+
+type Phase = "setup" | "scene" | "debrief";
+
+type BeatVerdict = "landed" | "flat" | "missed";
+
+type Beat =
+  | { role: "you"; text: string; goodHits: string[]; badHits: string[]; verdict: BeatVerdict }
+  | { role: "them"; text: string };
+
+interface LogEntry {
+  archetype: ArchetypeName;
+  situation: string;
+  score: number;
+  date: string;
+}
 
 function pickRandom(list: string[]): string {
   return list[Math.floor(Math.random() * list.length)] ?? "";
@@ -35,50 +46,170 @@ function verdictFor(score: number): string {
   return "That missed.";
 }
 
-function gaugeTone(score: number): string {
-  if (score >= 70) return "bg-emerald-500";
-  if (score >= 45) return "bg-amber-500";
-  return "bg-rose-500";
+/** Score one line against the archetype's cues. Same heuristics as before,
+    but the hits come back so the debrief can mark them in the transcript. */
+function scoreLine(
+  text: string,
+  archetype: ArchetypeName
+): { delta: number; goodHits: string[]; badHits: string[] } {
+  const cues = CUES[archetype];
+  const lower = text.toLowerCase();
+  let delta = 0;
+  const goodHits: string[] = [];
+  const badHits: string[] = [];
+
+  for (const cue of cues.good) {
+    if (lower.includes(cue.toLowerCase())) {
+      delta += 11;
+      goodHits.push(cue);
+    }
+  }
+  for (const cue of cues.bad) {
+    if (lower.includes(cue.toLowerCase())) {
+      delta -= 11;
+      badHits.push(cue);
+    }
+  }
+  if (text.length < 25) delta -= 6;
+  if (text.length > 420) delta -= 5;
+  if (archetype === "Promoter" && text.length < 160) delta += 5;
+  if (archetype === "Thinker" && /\d/.test(text)) delta += 6;
+  if (archetype === "Imaginer" && text.length > 200) delta -= 4;
+  if (archetype === "Harmonizer" && /\?/.test(text)) delta += 5;
+
+  return { delta, goodHits, badHits };
+}
+
+function beatVerdict(delta: number): BeatVerdict {
+  if (delta >= 8) return "landed";
+  if (delta <= -8) return "missed";
+  return "flat";
+}
+
+const VERDICT_TONE: Record<BeatVerdict, string> = {
+  landed: "text-azure",
+  flat: "text-muted-foreground",
+  missed: "text-destructive",
+};
+
+function readLog(): LogEntry[] {
+  try {
+    const raw = localStorage.getItem(LOG_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as LogEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/* Editor's marks for the debrief: the first occurrence of each cue,
+   overlaps keeping whichever starts first. */
+interface Mark {
+  start: number;
+  end: number;
+  kind: "good" | "bad";
+}
+
+function findMarks(text: string, good: string[], bad: string[]): Mark[] {
+  const lower = text.toLowerCase();
+  const all: Mark[] = [];
+  const push = (cues: string[], kind: Mark["kind"]): void => {
+    for (const cue of cues) {
+      const start = lower.indexOf(cue.toLowerCase());
+      if (start >= 0) all.push({ start, end: start + cue.length, kind });
+    }
+  };
+  push(good, "good");
+  push(bad, "bad");
+  all.sort((a, b) => a.start - b.start);
+
+  const marks: Mark[] = [];
+  let cursor = 0;
+  for (const mark of all) {
+    if (mark.start < cursor) continue;
+    marks.push(mark);
+    cursor = mark.end;
+  }
+  return marks;
+}
+
+function MarkedText({
+  text,
+  good,
+  bad,
+}: {
+  text: string;
+  good: string[];
+  bad: string[];
+}): ReactElement {
+  const marks = findMarks(text, good, bad);
+  if (marks.length === 0) return <>{text}</>;
+
+  const parts: ReactElement[] = [];
+  let cursor = 0;
+  marks.forEach((mark, i) => {
+    if (mark.start > cursor) {
+      parts.push(<span key={`t${i}`}>{text.slice(cursor, mark.start)}</span>);
+    }
+    parts.push(
+      <span
+        key={`m${i}`}
+        className={
+          mark.kind === "good"
+            ? "underline decoration-azure decoration-2 underline-offset-2"
+            : "underline decoration-destructive decoration-wavy underline-offset-2"
+        }
+      >
+        {text.slice(mark.start, mark.end)}
+      </span>
+    );
+    cursor = mark.end;
+  });
+  if (cursor < text.length) parts.push(<span key="tail">{text.slice(cursor)}</span>);
+  return <>{parts}</>;
 }
 
 export function Rehearsal(): ReactElement {
   const [archetypeName, setArchetypeName] = useState<ArchetypeName | null>(null);
   const [situationName, setSituationName] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("setup");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [beats, setBeats] = useState<Beat[]>([]);
   const [input, setInput] = useState("");
   const [score, setScore] = useState(START_SCORE);
   const [turns, setTurns] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [usedGoodCues, setUsedGoodCues] = useState<Set<string>>(new Set());
   const [showHint, setShowHint] = useState(false);
+  const [log, setLog] = useState<LogEntry[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const archetype = ARCHETYPES.find((a) => a.name === archetypeName) ?? null;
   const situation = SITUATIONS.find((s) => s.name === situationName) ?? null;
 
   useEffect(() => {
+    setLog(readLog());
+  }, []);
+
+  useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, isTyping]);
+  }, [beats, isTyping]);
 
   function start(): void {
     if (!archetype || !situation) return;
-    setMessages([
-      { role: "system", text: `${situation.name} · in character as ${archetype.name}` },
-      { role: "agent", text: situation.opening[archetype.name] },
-    ]);
+    setBeats([{ role: "them", text: situation.opening[archetype.name] }]);
     setScore(START_SCORE);
     setTurns(0);
     setUsedGoodCues(new Set());
     setShowHint(false);
-    setPhase("chat");
+    setPhase("scene");
   }
 
   function restart(): void {
     setPhase("setup");
     setArchetypeName(null);
     setSituationName(null);
-    setMessages([]);
+    setBeats([]);
     setInput("");
     setScore(START_SCORE);
     setTurns(0);
@@ -87,33 +218,28 @@ export function Rehearsal(): ReactElement {
     setIsTyping(false);
   }
 
+  function saveRun(finalScore: number): void {
+    if (!archetype || !situation) return;
+    const entry: LogEntry = {
+      archetype: archetype.name,
+      situation: situation.name,
+      score: finalScore,
+      date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+    };
+    const next = [entry, ...log].slice(0, LOG_LIMIT);
+    setLog(next);
+    try {
+      localStorage.setItem(LOG_KEY, JSON.stringify(next));
+    } catch {
+      // Private browsing or a full quota, the log just stays in memory.
+    }
+  }
+
   function send(): void {
     const text = input.trim();
     if (!text || !archetype || !situation || isTyping || turns >= MAX_TURNS) return;
 
-    const cues = CUES[archetype.name];
-    const lower = text.toLowerCase();
-    let delta = 0;
-    const hitNow: string[] = [];
-
-    for (const keyword of cues.good) {
-      if (lower.includes(keyword.toLowerCase())) {
-        delta += 11;
-        hitNow.push(keyword);
-      }
-    }
-    for (const keyword of cues.bad) {
-      if (lower.includes(keyword.toLowerCase())) {
-        delta -= 11;
-      }
-    }
-    if (text.length < 25) delta -= 6;
-    if (text.length > 420) delta -= 5;
-    if (archetype.name === "Promoter" && text.length < 160) delta += 5;
-    if (archetype.name === "Thinker" && /\d/.test(text)) delta += 6;
-    if (archetype.name === "Imaginer" && text.length > 200) delta -= 4;
-    if (archetype.name === "Harmonizer" && /\?/.test(text)) delta += 5;
-
+    const { delta, goodHits, badHits } = scoreLine(text, archetype.name);
     const nextScore = clamp(score + delta, 0, 100);
 
     let pool: string[];
@@ -125,121 +251,207 @@ export function Rehearsal(): ReactElement {
     const reply = pickRandom(pool);
     const nextTurns = turns + 1;
 
-    setMessages((prev) => [...prev, { role: "user", text }]);
+    setBeats((prev) => [
+      ...prev,
+      { role: "you", text, goodHits, badHits, verdict: beatVerdict(delta) },
+    ]);
     setInput("");
     setScore(nextScore);
     setTurns(nextTurns);
-    if (hitNow.length > 0) {
-      setUsedGoodCues((prev) => new Set([...prev, ...hitNow]));
+    if (goodHits.length > 0) {
+      setUsedGoodCues((prev) => new Set([...prev, ...goodHits]));
     }
     setIsTyping(true);
 
     window.setTimeout(() => {
       setIsTyping(false);
-      setMessages((prev) => [...prev, { role: "agent", text: reply }]);
-      if (nextTurns >= MAX_TURNS) setPhase("debrief");
+      setBeats((prev) => [...prev, { role: "them", text: reply }]);
+      if (nextTurns >= MAX_TURNS) {
+        setPhase("debrief");
+        saveRun(nextScore);
+      }
     }, 700);
   }
 
   const remainingGoodCues = archetype
-    ? CUES[archetype.name].good.filter((cue) => !usedGoodCues.has(cue)).slice(0, 4)
+    ? CUES[archetype.name].good.filter((cue) => !usedGoodCues.has(cue)).slice(0, 5)
     : [];
+  const advice = archetype && situation ? situation.advice[archetype.name] : null;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       {phase === "setup" && (
-        <Card>
-          <CardContent className="flex flex-col gap-6">
-            <div>
-              <p className="mb-2.5 text-xs font-medium text-muted-foreground">
-                Who are you facing
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {ARCHETYPES.map((a) => (
+        <section className="flex flex-col gap-8">
+          <div>
+            <p className={cn(label, "pb-3")}>Who you are facing</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {ARCHETYPES.map((a) => {
+                const active = a.name === archetypeName;
+                return (
                   <button
                     key={a.name}
                     type="button"
+                    aria-pressed={active}
                     onClick={() => setArchetypeName(a.name)}
                     className={cn(
-                      "px-3 py-1.5 text-sm transition-[background-color,box-shadow] duration-150",
-                      archetypeName !== a.name && "hover:bg-muted"
+                      "cursor-pointer px-4 py-3 text-left outline-none transition-[background-color,box-shadow] duration-(--duration-quick) focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
+                      !active && "hover:bg-muted"
                     )}
                     style={
-                      archetypeName === a.name
+                      active
                         ? {
-                            background: tint(a.color, 88),
-                            color: darken(a.color, 45),
+                            background: tint(a.color, 90),
                             boxShadow: `inset 0 0 0 1.5px ${darken(a.color, 15)}`,
                           }
                         : { boxShadow: `inset 0 0 0 1px ${tint(a.color, 30)}` }
                     }
                   >
-                    {a.name}
+                    <span className="block text-sm font-medium">{a.name}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {a.driver.replace(/^Driven by /, "")}
+                    </span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-            <div>
-              <p className="mb-2.5 text-xs font-medium text-muted-foreground">
-                What you have to say
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {SITUATIONS.map((s) => (
-                  <button
-                    key={s.name}
-                    type="button"
-                    onClick={() => setSituationName(s.name)}
-                    className={cn(
-                      "border px-3 py-1.5 text-sm transition-colors duration-150",
-                      situationName === s.name
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border hover:bg-muted"
-                    )}
-                  >
-                    {s.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <Button onClick={start} disabled={!archetype || !situation} className="self-start">
-              Start
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {(phase === "chat" || phase === "debrief") && archetype && situation && (
-        <Card>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium" style={{ color: darken(archetype.color, 25) }}>
-                {archetype.name}
-              </span>
-              <span className="text-muted-foreground">· {situation.name}</span>
-              <div className="ml-auto h-1 w-16 overflow-hidden bg-muted sm:w-24">
-                <div
-                  className={cn("h-full transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)", gaugeTone(score))}
-                  style={{ width: `${score}%` }}
-                />
-              </div>
-            </div>
-            <div ref={scrollRef} className="flex max-h-[420px] flex-col gap-3 overflow-y-auto py-1">
-              {messages.map((message, i) => (
-                <ChatBubble key={i} message={message} />
-              ))}
-              {isTyping && (
-                <div className="flex w-fit items-center gap-1 self-start rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
-                  <span className="motion-safe:animate-pulse">...</span>
-                </div>
-              )}
-            </div>
-            {phase === "chat" && showHint && (
-              <p className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-                {`A ${archetype.name} is ${archetype.driver.toLowerCase()}.`}
-                {remainingGoodCues.length > 0 ? ` Try bringing in: ${remainingGoodCues.join(", ")}.` : ""}
+            {archetype && (
+              <p
+                className="pt-4 font-heading text-lg italic"
+                style={{ color: darken(archetype.color) }}
+              >
+                {"“"}
+                {archetype.quote}
+                {"”"}
               </p>
             )}
-            {phase === "chat" && (
+          </div>
+
+          <div>
+            <p className={cn(label, "pb-3")}>The scene</p>
+            <div className="flex flex-wrap gap-2">
+              {SITUATIONS.map((s) => (
+                <button
+                  key={s.name}
+                  type="button"
+                  aria-pressed={s.name === situationName}
+                  onClick={() => setSituationName(s.name)}
+                  className={cn(
+                    "cursor-pointer border px-3 py-1.5 text-sm transition-colors duration-150",
+                    s.name === situationName
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border hover:bg-muted"
+                  )}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Button
+            size="lg"
+            onClick={start}
+            disabled={!archetype || !situation}
+            className="self-start"
+          >
+            Start the rehearsal
+          </Button>
+
+          {log.length > 0 && (
+            <div className="border-t border-border pt-5">
+              <p className={cn(label, "pb-2")}>Previous rehearsals</p>
+              <ul className="divide-y divide-border">
+                {log.map((entry, i) => (
+                  <li
+                    key={`${entry.date}-${i}`}
+                    className="flex items-baseline justify-between gap-4 py-2 text-sm"
+                  >
+                    <span>
+                      {entry.situation} · opposite the {entry.archetype}
+                    </span>
+                    <span className="flex items-baseline gap-3">
+                      <span className="text-xs text-muted-foreground">{entry.date}</span>
+                      <span className="font-heading text-base">{entry.score}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
+
+      {phase !== "setup" && archetype && situation && (
+        <section className="border border-border bg-card">
+          <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border px-5 py-3">
+            <p className={label}>
+              {situation.name} · opposite the {archetype.name}
+            </p>
+            <p className={label}>
+              {phase === "scene" ? `Beat ${Math.min(turns + 1, MAX_TURNS)} of ${MAX_TURNS}` : "Debrief"}
+            </p>
+          </header>
+          <div
+            role="meter"
+            aria-label="Receptiveness"
+            aria-valuenow={score}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            className="h-0.5 bg-muted"
+          >
+            <div
+              className="h-full bg-azure transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)"
+              style={{ width: `${score}%` }}
+            />
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="flex max-h-[420px] flex-col gap-5 overflow-y-auto px-5 py-5"
+          >
+            {beats.map((beat, i) =>
+              beat.role === "them" ? (
+                <div key={i} className="grid gap-x-4 gap-y-0.5 sm:grid-cols-[6rem_1fr]">
+                  <span
+                    className={cn(label, "sm:pt-1")}
+                    style={{ color: darken(archetype.color, 25) }}
+                  >
+                    {archetype.name}
+                  </span>
+                  <p className="font-heading text-base leading-relaxed">{beat.text}</p>
+                </div>
+              ) : (
+                <div key={i} className="grid gap-x-4 gap-y-0.5 sm:grid-cols-[6rem_1fr]">
+                  <span className={cn(label, "sm:pt-1")}>You</span>
+                  <div>
+                    <p className="font-heading text-base leading-relaxed">
+                      {phase === "debrief" ? (
+                        <MarkedText text={beat.text} good={beat.goodHits} bad={beat.badHits} />
+                      ) : (
+                        beat.text
+                      )}
+                    </p>
+                    <p
+                      className={cn(
+                        "pt-0.5 text-[10px] tracking-[0.18em] uppercase",
+                        VERDICT_TONE[beat.verdict]
+                      )}
+                    >
+                      {beat.verdict}
+                    </p>
+                  </div>
+                </div>
+              )
+            )}
+            {isTyping && (
+              <p className="font-heading text-sm text-muted-foreground italic sm:pl-[7rem]">
+                (pauses)
+              </p>
+            )}
+          </div>
+
+          {phase === "scene" && (
+            <div className="border-t border-border px-5 py-4">
               <div className="flex gap-2">
                 <Input
                   value={input}
@@ -260,88 +472,86 @@ export function Rehearsal(): ReactElement {
                   <PaperPlaneRight size={16} />
                 </Button>
               </div>
-            )}
-            {phase === "chat" && (
               <button
                 type="button"
                 onClick={() => setShowHint((v) => !v)}
-                className="self-start text-xs text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline"
+                className="mt-3 text-xs text-muted-foreground underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline"
               >
                 What does this person need?
               </button>
-            )}
-          </CardContent>
-        </Card>
+              {showHint && (
+                <p className="mt-2 font-heading text-sm text-muted-foreground italic">
+                  {`A ${archetype.name} is ${archetype.driver.toLowerCase()}.`}
+                  {remainingGoodCues.length > 0
+                    ? ` Try bringing in: ${remainingGoodCues.join(", ")}.`
+                    : ""}
+                </p>
+              )}
+            </div>
+          )}
+        </section>
       )}
 
-      {phase === "debrief" && archetype && situation && (
-        <Card>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex items-baseline justify-between">
-              <p className="text-2xl font-semibold tracking-tight">
-                {score}
-                <span className="text-base font-normal text-muted-foreground">/100</span>
+      {phase === "debrief" && archetype && situation && advice && (
+        <section className="flex flex-col gap-6">
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <p className="font-heading text-6xl font-medium">
+              {score}
+              <span className="text-xl text-muted-foreground">/100</span>
+            </p>
+            <p className="font-heading text-xl italic">{verdictFor(score)}</p>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            In the transcript above,{" "}
+            <span className="underline decoration-azure decoration-2 underline-offset-2">
+              underlined
+            </span>{" "}
+            phrases landed with the {archetype.name},{" "}
+            <span className="underline decoration-destructive decoration-wavy underline-offset-2">
+              wavy
+            </span>{" "}
+            ones set them off.
+          </p>
+
+          <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+            <div>
+              <span className={label}>The move</span>
+              <p className="pt-1.5 text-sm leading-relaxed">{advice.move}</p>
+            </div>
+            <div>
+              <span className={label}>Try this opening</span>
+              <p className="pt-1.5 font-heading text-base leading-relaxed text-muted-foreground italic">
+                {"“"}
+                {advice.example}
+                {"”"}
               </p>
-              <p className="text-sm font-medium">{verdictFor(score)}</p>
             </div>
-            <div className="h-1.5 w-full overflow-hidden bg-muted">
-              <div
-                className={cn("h-full transition-[width] duration-(--duration-fast) ease-(--ease-smooth-out)", gaugeTone(score))}
-                style={{ width: `${score}%` }}
-              />
+            <div>
+              <span className={label}>Remember</span>
+              <p className="pt-1.5 text-sm leading-relaxed">{archetype.howToSupport}</p>
             </div>
-            <div className="flex flex-col gap-3 text-sm">
-              <p>{situation.advice[archetype.name].move}</p>
-              <div>
-                <p className="mb-1 text-xs font-medium text-muted-foreground">Try this opening</p>
-                <p className="text-muted-foreground italic">
-                  &quot;{situation.advice[archetype.name].example}&quot;
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-muted-foreground">Remember</p>
-                <p>{archetype.howToSupport}</p>
-              </div>
-            </div>
-            {showHint && (
-              <p className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
+            <div>
+              <span className={label}>Language that works with a {archetype.name}</span>
+              <p className="pt-1.5 text-sm leading-relaxed">
                 {remainingGoodCues.length > 0
-                  ? `Try: ${remainingGoodCues.join(", ")}`
+                  ? remainingGoodCues.join(", ")
                   : "You used the cues that matter most."}
               </p>
-            )}
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => setShowHint((v) => !v)}>
-                What does this person need?
-              </Button>
-              <Button variant="ghost" onClick={restart}>
-                Restart
-              </Button>
             </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
+          </div>
 
-function ChatBubble({ message }: { message: ChatMessage }): ReactElement {
-  if (message.role === "system") {
-    return (
-      <p className="self-center text-center font-mono text-xs text-muted-foreground">
-        {message.text}
-      </p>
-    );
-  }
-  const isUser = message.role === "user";
-  return (
-    <div
-      className={cn(
-        "max-w-[80%] rounded-lg px-3 py-2 text-sm",
-        isUser ? "self-end bg-foreground text-background" : "self-start bg-muted text-foreground"
+          <div className="flex flex-wrap gap-2">
+            <Button size="lg" onClick={start}>
+              <ArrowCounterClockwise size={16} />
+              Rehearse again
+            </Button>
+            <Button size="lg" variant="ghost" onClick={restart}>
+              Change the scene
+            </Button>
+          </div>
+        </section>
       )}
-    >
-      {message.text}
     </div>
   );
 }

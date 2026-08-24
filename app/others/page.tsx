@@ -26,7 +26,7 @@ export default function OthersPage(): React.ReactElement {
         </section>
 
         <section className="mt-16 max-w-3xl">
-          <h2 className="text-2xl font-semibold tracking-tight">Read the room</h2>
+          <h2 className="text-2xl font-semibold">Read the room</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Pick who you are talking to and what you are walking into. You get the move and one
             line you could actually say.

@@ -44,29 +44,28 @@ const GATES: readonly Gate[] = [
 export default function HomePage(): React.ReactElement {
   return (
     <div>
-      {/* Print-style masthead: a heavy ink rule over serif display type,
-          the CTAs living with the pitch instead of a screen below it. */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-5xl px-5 pt-10 pb-12 sm:px-8 sm:pt-12 sm:pb-16">
-          <div className="border-t-[3px] border-foreground pt-6">
-            <h1 className="text-4xl font-medium tracking-tight sm:text-6xl">
-              The EI Path
-            </h1>
-            <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-              Emotional intelligence for PMT. Know yourself, read the room,
-              practise it.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/tree" className={buttonVariants({ size: "lg" })}>
-                Open the skill tree
-              </Link>
-              <Link
-                href="/how"
-                className={buttonVariants({ variant: "outline", size: "lg" })}
-              >
-                How it works
-              </Link>
-            </div>
+      {/* Editorial masthead: serif display with an italic accent, an italic
+          serif lede, the CTAs living with the pitch instead of a screen
+          below it. */}
+      <section className="border-b border-border bg-secondary">
+        <div className="mx-auto max-w-5xl px-5 pt-14 pb-14 sm:px-8 sm:pt-20 sm:pb-18">
+          <h1 className="text-5xl leading-[1.08] font-medium sm:text-7xl">
+            The EI <em>Path</em>
+          </h1>
+          <p className="mt-5 max-w-xl font-heading text-lg text-muted-foreground italic sm:text-xl">
+            Emotional intelligence for PMT. Know yourself, read the room,
+            practise it.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link href="/tree" className={buttonVariants({ size: "lg" })}>
+              Open the skill tree
+            </Link>
+            <Link
+              href="/how"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              How it works
+            </Link>
           </div>
         </div>
       </section>
@@ -80,7 +79,7 @@ export default function HomePage(): React.ReactElement {
                 className="group flex h-full flex-col gap-3 bg-card p-5 ring-1 ring-border transition-[box-shadow,translate] duration-(--duration-fast) ease-(--ease-smooth-out) hover:-translate-y-0.5 hover:shadow-sm hover:ring-azure/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-azure">
+                  <span className="text-xs text-azure">
                     {gate.num}
                   </span>
                   <gate.icon

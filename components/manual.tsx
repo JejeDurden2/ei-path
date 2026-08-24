@@ -35,7 +35,7 @@ const PREVIEW_ID = "manual-preview";
 const FOOTER = "The EI Path · PMT";
 
 const eyebrow =
-  "font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground";
+  "text-[10px] uppercase tracking-[0.18em] text-muted-foreground";
 
 function read(): ManualData {
   try {
@@ -243,7 +243,7 @@ export function Manual({ prefill }: ManualProps): React.JSX.Element {
 
         <p
           aria-live="polite"
-          className={`font-mono text-[11px] leading-relaxed text-muted-foreground transition-opacity duration-(--duration-fast) ${
+          className={`text-[11px] leading-relaxed text-muted-foreground transition-opacity duration-(--duration-fast) ${
             note ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -257,7 +257,7 @@ export function Manual({ prefill }: ManualProps): React.JSX.Element {
       >
         <CardContent>
           <span className={eyebrow}>User manual</span>
-          <h3 className="pt-2 text-xl font-medium tracking-tight text-foreground">
+          <h3 className="font-heading pt-2 text-xl font-medium text-foreground">
             {data.name?.trim() || "Your name"}
           </h3>
         </CardContent>

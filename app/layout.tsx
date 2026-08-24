@@ -1,27 +1,20 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from "next/font/google";
+import { Playfair_Display, Source_Sans_3 } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { Footer } from "@/components/footer";
 import "./globals.css";
 
-// One family, three cuts: IBM Plex was drawn for technical publishing,
-// which is exactly the register this site wants.
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+// Editorial pairing: a high-contrast serif for display type, with its
+// italic for pull-quotes and accents, over a humanist sans body.
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
 });
 
-const plexSerif = IBM_Plex_Serif({
-  variable: "--font-plex-serif",
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -34,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${plexSans.variable} ${plexSerif.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SiteNav />

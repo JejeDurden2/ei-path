@@ -8,9 +8,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-azure: var(--azure);
-  --font-sans: var(--font-plex-sans);
-  --font-mono: var(--font-plex-mono);
-  --font-heading: var(--font-plex-serif);
+  --font-sans: var(--font-source-sans);
+  /* No mono in the editorial register: annotations are letterspaced caps. */
+  --font-mono: var(--font-source-sans);
+  --font-heading: var(--font-playfair);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -159,20 +160,9 @@
     opacity: 1;
   }
 
-  /* Graph-paper canvas behind the skill tree, so the graph reads as a figure. */
+  /* Quiet canvas behind the skill tree, so the graph reads as its own plate. */
   .tree-surface {
     background-color: var(--secondary);
-    background-image:
-      linear-gradient(
-        color-mix(in oklch, var(--border), transparent 45%) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in oklch, var(--border), transparent 45%) 1px,
-        transparent 1px
-      );
-    background-size: 24px 24px;
   }
 
   /* Skill tree graph. Scattered absolute layout on md+, plain column on mobile. */

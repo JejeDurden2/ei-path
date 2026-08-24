@@ -109,7 +109,7 @@ export function ArchetypeExplorer({ archetypes }: ArchetypeExplorerProps): React
           className="animate-in p-5 duration-(--duration-fast) fade-in slide-in-from-bottom-1 ease-(--ease-smooth-out) motion-reduce:animate-none sm:p-7"
         >
           <p
-            className="font-mono text-base leading-relaxed text-balance sm:text-lg"
+            className="font-heading text-xl leading-relaxed text-balance italic sm:text-2xl"
             style={{ color: darken(selected.color) }}
           >
             {"“"}
@@ -160,7 +160,7 @@ export function ArchetypeExplorer({ archetypes }: ArchetypeExplorerProps): React
                     )}
                     <span
                       aria-hidden
-                      className="absolute top-0 left-0 flex size-[23px] items-center justify-center rounded-full bg-background font-mono text-[11px]"
+                      className="absolute top-0 left-0 flex size-[23px] items-center justify-center rounded-full bg-background text-[11px]"
                       style={{
                         color: darken(selected.color, 25),
                         boxShadow: `inset 0 0 0 1px ${tint(selected.color, 30)}`,

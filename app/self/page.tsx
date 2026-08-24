@@ -28,7 +28,7 @@ export default function SelfPage(): React.JSX.Element {
       />
       <div className="mx-auto w-full max-w-4xl px-5 py-10 sm:px-8 sm:py-12">
         <section>
-          <h2 className="text-xl font-medium tracking-tight text-foreground">
+          <h2 className="text-xl font-medium text-foreground">
             Start with the quiz
           </h2>
           <p className="max-w-2xl pt-3 pb-6 text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -39,7 +39,7 @@ export default function SelfPage(): React.JSX.Element {
         </section>
 
         <section ref={manualRef} className="scroll-mt-8 pt-12">
-          <h2 className="text-xl font-medium tracking-tight text-foreground">
+          <h2 className="text-xl font-medium text-foreground">
             Your user manual, built live
           </h2>
           <p className="max-w-2xl pt-3 pb-6 text-sm leading-relaxed text-muted-foreground sm:text-base">

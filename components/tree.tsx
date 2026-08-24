@@ -22,7 +22,8 @@ const STORAGE_KEY = "eipath.tree";
 /* Scattered layout, on purpose: growth is not a straight line.
    Percent x + px y inside a fixed-height canvas on md+, plain column on mobile. */
 const POSITIONS: { x: string; y: number }[] = [
-  { x: "2%", y: 60 },
+  // First branch sits below the legend plate that occupies the top-left corner.
+  { x: "3%", y: 240 },
   { x: "25%", y: 610 },
   { x: "56%", y: 110 },
   { x: "77%", y: 520 },
@@ -141,13 +142,25 @@ export function Tree(): ReactElement {
   const percentage = totalModules > 0 ? Math.round((doneModules / totalModules) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
-          <p className="font-mono text-xs text-muted-foreground">
+    <div>
+      {/* Full-bleed canvas: the graph gets the whole viewport width. */}
+      <div className="tree-surface overflow-hidden border-b border-border p-4 sm:p-6">
+      <div
+        ref={wrapRef}
+        className="tree-canvas relative mx-auto flex max-w-[1600px] flex-col items-center gap-8 md:block"
+        style={{ "--tree-h": `${CANVAS_HEIGHT}px` } as CSSProperties}
+      >
+        {/* Legend plate, inside the graph like a map key. */}
+        <div
+          className="tree-branch flex flex-col gap-3 border border-border bg-background p-4 md:z-10"
+          style={{ "--x": "0%", "--y": "0px", "--w": "250px" } as CSSProperties}
+        >
+          <h1 className="font-heading text-lg font-medium">Capability tree</h1>
+          <p className="text-xs text-muted-foreground">
             {doneModules} / {totalModules} modules
           </p>
-          <ul className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+          <Progress value={percentage} />
+          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] uppercase tracking-wide text-muted-foreground">
             <li className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-azure" aria-hidden />
               in progress
@@ -162,15 +175,6 @@ export function Tree(): ReactElement {
             </li>
           </ul>
         </div>
-        <Progress value={percentage} />
-      </div>
-
-      <div className="tree-surface overflow-hidden rounded-2xl p-4 ring-1 ring-border sm:p-6">
-      <div
-        ref={wrapRef}
-        className="tree-canvas relative flex flex-col items-center gap-8 md:block"
-        style={{ "--tree-h": `${CANVAS_HEIGHT}px` } as CSSProperties}
-      >
         <svg className="pointer-events-none absolute inset-0 hidden size-full overflow-visible md:block" aria-hidden>
           {wires &&
             TREE.map((branch, index) => {
@@ -199,7 +203,7 @@ export function Tree(): ReactElement {
           style={{ "--x": ROOT_POSITION.x, "--y": `${ROOT_POSITION.y}px`, "--w": "250px" } as CSSProperties}
         >
           <span className="block text-base font-semibold tracking-tight">Emotional Intelligence</span>
-          <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="mt-1.5 block text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             PMT · the path
           </span>
         </div>
@@ -234,7 +238,7 @@ export function Tree(): ReactElement {
                 )}
               >
                 {isNext && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-azure px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-white">
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-azure px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] text-white">
                     next up
                   </span>
                 )}
@@ -245,7 +249,7 @@ export function Tree(): ReactElement {
                   <Lock size={12} className="absolute right-2.5 top-2.5 text-muted-foreground" />
                 )}
                 <span className="block text-sm font-medium">{branch.title}</span>
-                <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+                <span className="mt-1 block text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
                   {branch.subtitle} · {branchDone}/{branch.modules.length}
                 </span>
                 {!unlocked && (

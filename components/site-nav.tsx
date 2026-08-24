@@ -21,7 +21,7 @@ export function SiteNav(): React.ReactElement {
       <div className="mx-auto flex max-w-5xl items-center gap-6 px-5 py-3 sm:px-8">
         <Link
           href="/"
-          className="shrink-0 font-heading text-base font-semibold tracking-tight text-foreground"
+          className="shrink-0 font-heading text-lg font-semibold text-foreground italic"
         >
           The EI Path
         </Link>
@@ -39,7 +39,7 @@ export function SiteNav(): React.ReactElement {
                     href={link.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "inline-block py-1 text-sm underline-offset-[6px] transition-colors duration-(--duration-quick) ease-(--ease-out)",
+                      "inline-block py-1 text-xs tracking-[0.12em] uppercase underline-offset-[6px] transition-colors duration-(--duration-quick) ease-(--ease-out)",
                       active
                         ? "text-foreground underline decoration-azure decoration-2"
                         : "text-muted-foreground hover:text-foreground",

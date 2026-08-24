@@ -92,12 +92,12 @@ export function Simulator(): React.ReactElement {
             boxShadow: `inset 0 0 0 1px ${tint(archetype.color, 55)}`,
           }}
         >
-          <p className="font-mono text-xs" style={{ color: darken(archetype.color) }}>
+          <p className="text-xs" style={{ color: darken(archetype.color) }}>
             {picked.name} · {archetype.name}
           </p>
           <p className="mt-3 text-sm leading-relaxed">{advice.move}</p>
           <p className="mt-4 text-xs font-medium text-muted-foreground">Concrete example</p>
-          <p className="mt-1 border-l-2 pl-3 text-sm leading-relaxed text-muted-foreground" style={{ borderColor: archetype.color }}>
+          <p className="mt-1 border-l-2 pl-3 font-heading text-base leading-relaxed text-muted-foreground italic" style={{ borderColor: archetype.color }}>
             {"“"}
             {advice.example}
             {"”"}
