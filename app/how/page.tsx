@@ -37,15 +37,12 @@ function Disclosure({ item }: { item: FormatItem }): React.ReactElement {
 export default function HowPage(): React.ReactElement {
   return (
     <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16">
-      <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+      <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
         How it works
-      </p>
-      <h1 className="mt-5 text-3xl font-medium tracking-tight sm:text-4xl">
-        Four moves
       </h1>
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-        Two about you, two about the others. Stop and pick it up whenever you
-        want, the tree keeps your progress.
+        Four moves: two about you, two about the others. Stop and pick it up
+        whenever you want, the tree keeps your progress.
       </p>
 
       <ol className="mt-10 divide-y divide-border border-y border-border">

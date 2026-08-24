@@ -48,14 +48,12 @@ export default function HomePage(): React.ReactElement {
           screen below it. */}
       <section className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-18">
-          <p className="font-mono text-xs tracking-widest text-primary-foreground/60 uppercase">
-            Emotional Intelligence in PMT
-          </p>
-          <h1 className="mt-4 text-4xl font-medium tracking-tight sm:text-5xl">
+          <h1 className="text-4xl font-medium tracking-tight sm:text-5xl">
             The EI Path
           </h1>
-          <p className="mt-3 max-w-xl text-lg text-primary-foreground/75">
-            Know yourself. Read the room. Practise it.
+          <p className="mt-3 max-w-xl text-lg text-primary-foreground/85">
+            Emotional intelligence for PMT. Know yourself, read the room,
+            practise it.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
@@ -99,7 +97,7 @@ export default function HomePage(): React.ReactElement {
                     size={18}
                     weight="duotone"
                     aria-hidden
-                    className="text-azure/70 transition-colors duration-(--duration-fast) ease-(--ease-out) group-hover:text-azure"
+                    className="text-azure transition-colors duration-(--duration-fast) ease-(--ease-out) group-hover:text-primary"
                   />
                 </div>
                 <span className="text-base font-medium">{gate.title}</span>
