@@ -24,7 +24,7 @@ export default function SelfPage(): React.JSX.Element {
     <div>
       <PageHeader
         title="Know yourself"
-        lede="You cannot read a room you are not part of. Start with your own emotions, then go one level deeper: the skills, needs and motivation that cascade from your personality."
+        lede="You cannot read a room you are not part of. Start with your own emotions."
       />
       <div className="mx-auto w-full max-w-4xl px-5 py-10 sm:px-8 sm:py-12">
         <section>

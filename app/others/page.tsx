@@ -18,7 +18,7 @@ export default function OthersPage(): React.ReactElement {
     <div>
       <PageHeader
         title="Know others"
-        lede="Not to classify people. To stop assuming they are difficult, and start asking what they need to engage."
+        lede="Stop guessing why people are difficult. Ask what they need to engage."
       />
       <div className="mx-auto w-full max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
         <section>

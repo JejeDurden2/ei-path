@@ -40,7 +40,7 @@ export default function HowPage(): React.ReactElement {
     <div>
       <PageHeader
         title="How it works"
-        lede="Four moves: two about you, two about the others. Stop and pick it up whenever you want, the tree keeps your progress."
+        lede="Four moves: two about you, two about the others. The tree keeps your progress."
       />
       <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
         <ol className="divide-y divide-border border-y border-border">
