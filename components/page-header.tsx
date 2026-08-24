@@ -1,21 +1,17 @@
-import { cn } from "@/lib/utils";
-
 interface PageHeaderProps {
   title: string;
   lede: string;
-  /** Width and padding classes matching the page's content container. */
-  container?: string;
 }
 
-/** Full-bleed navy band, the same treatment as the homepage hero. */
+/** Full-bleed navy band, the same treatment and alignment as the homepage
+    hero, whatever width the page content uses below it. */
 export function PageHeader({
   title,
   lede,
-  container = "max-w-5xl px-5 sm:px-8",
 }: PageHeaderProps): React.ReactElement {
   return (
     <section className="bg-primary text-primary-foreground">
-      <div className={cn("mx-auto py-10 sm:py-12", container)}>
+      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
         <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">
           {title}
         </h1>
