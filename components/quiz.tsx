@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowCounterClockwise, ArrowDown } from "@phosphor-icons/react";
 
+import { darken } from "@/components/archetype-card";
 import { ARCHETYPES, QUIZ } from "@/lib/data";
 import type { Archetype, ArchetypeName, ManualKey, QuizOption } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -87,7 +88,7 @@ export function Quiz({ onSend }: QuizProps): React.JSX.Element {
                   key={option.label}
                   type="button"
                   onClick={() => choose(option)}
-                  className="rounded-lg border border-border px-4 py-3 text-left text-sm leading-relaxed text-foreground transition-[background-color,border-color] duration-(--duration-quick) ease-(--ease-out) hover:border-foreground/40 hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                  className="rounded-lg border border-border bg-background px-4 py-3 text-left text-sm leading-relaxed text-foreground transition-[background-color,border-color] duration-(--duration-quick) ease-(--ease-out) hover:border-foreground/40 hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
                 >
                   {option.label}
                 </button>
@@ -133,18 +134,19 @@ function Result({ score, picks, sent, onSend, onRetake }: ResultProps): React.JS
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="flex items-center gap-2 text-lg tracking-tight text-foreground sm:text-xl">
-          <span
-            aria-hidden="true"
-            className="size-2.5 shrink-0 rounded-full"
-            style={{ backgroundColor: best.color }}
-          />
-          You lean <b className="font-semibold">{best.name}</b>
+        <span className="text-lg tracking-tight text-foreground sm:text-xl">
+          You lean{" "}
+          <b className="font-semibold" style={{ color: darken(best.color, 30) }}>
+            {best.name}
+          </b>
         </span>
         <span className={eyebrow}>runner-up: {second.name}</span>
       </div>
 
-      <p className="border-l-2 border-border pl-4 font-mono text-sm leading-relaxed text-muted-foreground">
+      <p
+        className="border-l-2 pl-4 font-mono text-sm leading-relaxed text-muted-foreground"
+        style={{ borderColor: best.color }}
+      >
         &ldquo;{best.quote}&rdquo;
       </p>
 

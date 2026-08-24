@@ -249,6 +249,7 @@ export function Rehearsal(): ReactElement {
                   }}
                   placeholder="Say what you'd actually say"
                   disabled={isTyping}
+                  className="bg-background"
                 />
                 <Button
                   size="icon"

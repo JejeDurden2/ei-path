@@ -8,7 +8,7 @@ function Disclosure({ item }: { item: FormatItem }): React.ReactElement {
   const isPlaceholder = item.detail.startsWith("[");
 
   return (
-    <details className="disclosure h-full rounded-xl p-5 ring-1 ring-foreground/10 transition-shadow duration-(--duration-fast) ease-(--ease-smooth-out) hover:shadow-sm">
+    <details className="disclosure h-full rounded-xl bg-card p-5 ring-1 ring-border transition-shadow duration-(--duration-fast) ease-(--ease-smooth-out) hover:shadow-sm">
       <summary className="flex items-start justify-between gap-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
         <span>
           <span className="block text-base font-medium">{item.title}</span>

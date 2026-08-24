@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { ARCHETYPES, SITUATIONS } from "@/lib/data";
-import { darken } from "@/components/archetype-card";
+import { darken, tint } from "@/components/archetype-card";
 import { cn } from "@/lib/utils";
 import type { ArchetypeName } from "@/lib/types";
 
@@ -15,26 +15,32 @@ interface ChipProps {
 }
 
 function Chip({ label, selected, color, onSelect }: ChipProps): React.ReactElement {
-  const accent = color ? darken(color, 25) : "var(--foreground)";
   return (
     <button
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
-        selected ? "border-current bg-muted" : "border-border text-muted-foreground hover:text-foreground"
+        "cursor-pointer rounded-full px-3 py-1.5 text-sm transition-[background-color,box-shadow,color] duration-150 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none",
+        !selected && "hover:bg-muted",
+        !color &&
+          (selected
+            ? "bg-foreground text-background"
+            : "text-muted-foreground ring-1 ring-border ring-inset hover:text-foreground")
       )}
-      style={selected ? { color: accent } : undefined}
+      style={
+        color
+          ? selected
+            ? {
+                background: tint(color, 88),
+                color: darken(color, 45),
+                boxShadow: `inset 0 0 0 1.5px ${darken(color, 15)}`,
+              }
+            : { boxShadow: `inset 0 0 0 1px ${tint(color, 30)}` }
+          : undefined
+      }
     >
-      {color ? (
-        <span
-          aria-hidden
-          className="size-1.5 rounded-full"
-          style={{ background: color }}
-        />
-      ) : null}
-      <span className={cn(selected && "text-foreground")}>{label}</span>
+      {label}
     </button>
   );
 }
@@ -80,8 +86,11 @@ export function Simulator(): React.ReactElement {
 
       {archetype && picked && advice ? (
         <div
-          className="rounded-xl bg-card p-5"
-          style={{ boxShadow: `inset 0 0 0 1px ${darken(archetype.color, 15)}` }}
+          className="rounded-xl p-5"
+          style={{
+            background: tint(archetype.color),
+            boxShadow: `inset 0 0 0 1px ${tint(archetype.color, 55)}`,
+          }}
         >
           <p className="font-mono text-xs" style={{ color: darken(archetype.color) }}>
             {picked.name} · {archetype.name}

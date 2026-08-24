@@ -165,6 +165,7 @@ export function Tree(): ReactElement {
         <Progress value={percentage} />
       </div>
 
+      <div className="tree-surface overflow-hidden rounded-2xl p-4 ring-1 ring-border sm:p-6">
       <div
         ref={wrapRef}
         className="tree-canvas relative flex flex-col items-center gap-8 md:block"
@@ -194,7 +195,7 @@ export function Tree(): ReactElement {
           ref={(el) => {
             nodeRefs.current.root = el;
           }}
-          className="tree-branch rounded-2xl border border-azure/50 bg-card px-5 py-5 text-center shadow-[0_0_0_4px_rgba(46,91,255,0.08)] md:z-10"
+          className="tree-branch rounded-2xl border border-azure/50 bg-background px-5 py-5 text-center shadow-[0_0_0_4px_rgba(46,91,255,0.08)] md:z-10"
           style={{ "--x": ROOT_POSITION.x, "--y": `${ROOT_POSITION.y}px`, "--w": "250px" } as CSSProperties}
         >
           <span className="block text-base font-semibold tracking-tight">Emotional Intelligence</span>
@@ -225,7 +226,7 @@ export function Tree(): ReactElement {
                 aria-expanded={open}
                 onClick={() => setOpenId(open ? null : branch.id)}
                 className={cn(
-                  "relative w-full rounded-xl border bg-card px-4 py-3.5 text-center transition-all duration-200",
+                  "relative w-full rounded-xl border bg-background px-4 py-3.5 text-center transition-all duration-200",
                   !unlocked && "cursor-not-allowed opacity-60",
                   unlocked && "hover:-translate-y-0.5 hover:border-azure hover:shadow-md",
                   open && "border-azure shadow-[0_0_0_3px_rgba(46,91,255,0.12)]",
@@ -267,7 +268,7 @@ export function Tree(): ReactElement {
                         type="button"
                         onClick={() => toggleModule(branch.id, module)}
                         className={cn(
-                          "tree-kid flex w-full items-start gap-2.5 rounded-lg border bg-card px-3 py-2.5 text-left text-xs transition-colors duration-150",
+                          "tree-kid flex w-full items-start gap-2.5 rounded-lg border bg-background px-3 py-2.5 text-left text-xs transition-colors duration-150",
                           moduleDone
                             ? "border-azure/60"
                             : "border-dashed border-border hover:border-azure/60"
@@ -303,6 +304,7 @@ export function Tree(): ReactElement {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

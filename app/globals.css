@@ -65,21 +65,22 @@
      and every neutral tinted toward the same blue hue. */
   --background: #ffffff;
   --foreground: #0e1335;
-  --card: #ffffff;
+  /* Cards sit on a soft blue surface so they separate from the white page. */
+  --card: #f4f7fd;
   --card-foreground: #0e1335;
   --popover: #ffffff;
   --popover-foreground: #0e1335;
   --primary: #000835;
   --primary-foreground: #ffffff;
-  --secondary: #eef2fb;
+  --secondary: #eaf0fa;
   --secondary-foreground: #000835;
-  --muted: #f3f6fc;
-  --muted-foreground: #5b6488;
-  --accent: #e8eefc;
+  --muted: #e7edf8;
+  --muted-foreground: #4c5578;
+  --accent: #e2eafa;
   --accent-foreground: #000835;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #dde3f2;
-  --input: #dde3f2;
+  --border: #d2dbee;
+  --input: #c9d4ea;
   --ring: #2e5bff;
   --azure: #2e5bff;
   --chart-1: #2e5bff;
@@ -150,6 +151,16 @@
   .disclosure[open]::details-content {
     block-size: auto;
     opacity: 1;
+  }
+
+  /* Dotted canvas behind the skill tree, so the graph reads as its own space. */
+  .tree-surface {
+    background-color: var(--secondary);
+    background-image: radial-gradient(
+      color-mix(in oklch, var(--azure), transparent 80%) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
   }
 
   /* Skill tree graph. Scattered absolute layout on md+, plain column on mobile. */
