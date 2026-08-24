@@ -43,60 +43,81 @@ const GATES: readonly Gate[] = [
 
 export default function HomePage(): React.ReactElement {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
-      <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-        Emotional Intelligence in PMT
-      </p>
-      <h1 className="mt-5 text-4xl font-medium tracking-tight sm:text-5xl">
-        The EI Path
-      </h1>
-      <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-        Know yourself. Read the room. Practise it.
-      </p>
-
-      <ul className="mt-14 grid gap-4 sm:grid-cols-3">
-        {GATES.map((gate) => (
-          <li key={gate.num}>
+    <div>
+      {/* Full-bleed navy band: the CTAs live with the pitch instead of a
+          screen below it. */}
+      <section className="bg-primary text-primary-foreground">
+        <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-18">
+          <p className="font-mono text-xs tracking-widest text-primary-foreground/60 uppercase">
+            Emotional Intelligence in PMT
+          </p>
+          <h1 className="mt-4 text-4xl font-medium tracking-tight sm:text-5xl">
+            The EI Path
+          </h1>
+          <p className="mt-3 max-w-xl text-lg text-primary-foreground/75">
+            Know yourself. Read the room. Practise it.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
-              href={gate.href}
-              className="group flex h-full flex-col gap-3 rounded-xl p-5 ring-1 ring-foreground/10 transition-[box-shadow,translate] duration-(--duration-fast) ease-(--ease-smooth-out) hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              href="/tree"
+              className={buttonVariants({
+                size: "lg",
+                className:
+                  "bg-background text-primary hover:bg-background/90",
+              })}
             >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-muted-foreground">
-                  {gate.num}
-                </span>
-                <gate.icon
-                  size={18}
-                  weight="duotone"
-                  aria-hidden
-                  className="text-muted-foreground transition-colors duration-(--duration-fast) ease-(--ease-out) group-hover:text-foreground"
-                />
-              </div>
-              <span className="text-base font-medium">{gate.title}</span>
-              <span className="text-sm text-muted-foreground">{gate.sub}</span>
+              Open the skill tree
             </Link>
-          </li>
-        ))}
-      </ul>
+            <Link
+              href="/how"
+              className={buttonVariants({
+                variant: "ghost",
+                size: "lg",
+                className:
+                  "text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground",
+              })}
+            >
+              How it works
+            </Link>
+          </div>
+        </div>
+      </section>
 
-      <div className="mt-14 flex flex-wrap items-center gap-2">
-        {RULES.map((rule) => (
-          <Badge key={rule} variant="outline" className="font-normal">
-            {rule}
-          </Badge>
-        ))}
-      </div>
+      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
+        <ul className="grid gap-4 sm:grid-cols-3">
+          {GATES.map((gate) => (
+            <li key={gate.num}>
+              <Link
+                href={gate.href}
+                className="group flex h-full flex-col gap-3 rounded-xl bg-card p-5 ring-1 ring-border transition-[box-shadow,translate] duration-(--duration-fast) ease-(--ease-smooth-out) hover:-translate-y-0.5 hover:shadow-sm hover:ring-azure/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs text-azure">
+                    {gate.num}
+                  </span>
+                  <gate.icon
+                    size={18}
+                    weight="duotone"
+                    aria-hidden
+                    className="text-azure/70 transition-colors duration-(--duration-fast) ease-(--ease-out) group-hover:text-azure"
+                  />
+                </div>
+                <span className="text-base font-medium">{gate.title}</span>
+                <span className="text-sm text-muted-foreground">
+                  {gate.sub}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-      <div className="mt-10 flex flex-wrap items-center gap-3">
-        <Link href="/tree" className={buttonVariants({ size: "lg" })}>
-          Open the skill tree
-        </Link>
-        <Link
-          href="/how"
-          className={buttonVariants({ variant: "ghost", size: "lg" })}
-        >
-          How it works
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center gap-2">
+          {RULES.map((rule) => (
+            <Badge key={rule} variant="secondary" className="font-normal">
+              {rule}
+            </Badge>
+          ))}
+        </div>
       </div>
     </div>
   );

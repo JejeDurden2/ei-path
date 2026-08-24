@@ -41,7 +41,7 @@ export function SiteNav(): React.ReactElement {
                     className={cn(
                       "inline-block py-1 text-sm underline-offset-[6px] transition-colors duration-(--duration-quick) ease-(--ease-out)",
                       active
-                        ? "text-foreground underline decoration-foreground"
+                        ? "text-foreground underline decoration-azure decoration-2"
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >

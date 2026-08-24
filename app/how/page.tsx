@@ -36,7 +36,7 @@ function Disclosure({ item }: { item: FormatItem }): React.ReactElement {
 
 export default function HowPage(): React.ReactElement {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
+    <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16">
       <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
         How it works
       </p>
@@ -48,7 +48,7 @@ export default function HowPage(): React.ReactElement {
         want, the tree keeps your progress.
       </p>
 
-      <ol className="mt-14 divide-y divide-border border-y border-border">
+      <ol className="mt-10 divide-y divide-border border-y border-border">
         {STEPS.map((step, i) => (
           <li
             key={step.title}
@@ -65,7 +65,7 @@ export default function HowPage(): React.ReactElement {
         ))}
       </ol>
 
-      <h2 className="mt-20 text-xl font-medium tracking-tight">The formats</h2>
+      <h2 className="mt-14 text-xl font-medium tracking-tight">The formats</h2>
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {FORMATS.map((format) => (
           <li key={format.title}>
@@ -74,7 +74,7 @@ export default function HowPage(): React.ReactElement {
         ))}
       </ul>
 
-      <h2 className="mt-20 text-xl font-medium tracking-tight">
+      <h2 className="mt-14 text-xl font-medium tracking-tight">
         Where this comes from
       </h2>
       <ul className="mt-6 grid gap-4 sm:grid-cols-2">

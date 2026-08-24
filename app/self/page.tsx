@@ -20,7 +20,7 @@ export default function SelfPage(): React.JSX.Element {
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-14 sm:py-20">
+    <main className="mx-auto w-full max-w-4xl px-6 py-12 sm:py-16">
       <h1 className="text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
         Know yourself
       </h1>
@@ -30,7 +30,7 @@ export default function SelfPage(): React.JSX.Element {
         from your personality.
       </p>
 
-      <section className="pt-14 sm:pt-16">
+      <section className="pt-12">
         <h2 className="text-xl font-medium tracking-tight text-foreground">
           Start with the quiz
         </h2>
@@ -41,7 +41,7 @@ export default function SelfPage(): React.JSX.Element {
         <Quiz onSend={handleSend} />
       </section>
 
-      <section ref={manualRef} className="scroll-mt-8 pt-14 sm:pt-16">
+      <section ref={manualRef} className="scroll-mt-8 pt-12">
         <h2 className="text-xl font-medium tracking-tight text-foreground">
           Your user manual, built live
         </h2>
