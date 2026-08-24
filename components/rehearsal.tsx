@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 
+import { darken, tint } from "@/components/archetype-card";
 import { ANSWERS, ARCHETYPES, CUES, FLAT, REACTIONS, SITUATIONS } from "@/lib/data";
 import type { ArchetypeName } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -160,16 +161,19 @@ export function Rehearsal(): ReactElement {
                     type="button"
                     onClick={() => setArchetypeName(a.name)}
                     className={cn(
-                      "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors duration-150",
-                      archetypeName === a.name
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border hover:bg-muted"
+                      "rounded-full px-3 py-1.5 text-sm transition-[background-color,box-shadow] duration-150",
+                      archetypeName !== a.name && "ring-1 ring-border ring-inset hover:bg-muted"
                     )}
+                    style={
+                      archetypeName === a.name
+                        ? {
+                            background: tint(a.color, 88),
+                            color: darken(a.color, 45),
+                            boxShadow: `inset 0 0 0 1.5px ${darken(a.color, 15)}`,
+                          }
+                        : undefined
+                    }
                   >
-                    <span
-                      className="size-1.5 rounded-full"
-                      style={{ backgroundColor: a.color }}
-                    />
                     {a.name}
                   </button>
                 ))}
@@ -208,8 +212,9 @@ export function Rehearsal(): ReactElement {
         <Card>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center gap-2 text-sm">
-              <span className="size-2 rounded-full" style={{ backgroundColor: archetype.color }} />
-              <span className="font-medium">{archetype.name}</span>
+              <span className="font-medium" style={{ color: darken(archetype.color, 25) }}>
+                {archetype.name}
+              </span>
               <span className="text-muted-foreground">· {situation.name}</span>
               <div className="ml-auto h-1 w-16 overflow-hidden rounded-full bg-muted sm:w-24">
                 <div

@@ -10,7 +10,7 @@ export function darken(color: string, amount = 40): string {
   return `color-mix(in oklch, ${color}, black ${amount}%)`;
 }
 
-function tint(color: string, amount = 93): string {
+export function tint(color: string, amount = 93): string {
   return `color-mix(in oklch, ${color}, white ${amount}%)`;
 }
 
